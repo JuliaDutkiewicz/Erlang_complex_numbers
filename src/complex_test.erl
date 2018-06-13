@@ -11,7 +11,7 @@
 -include_lib("eqc/include/eqc.hrl").
 
 %% API
--export([prop_square/0, prop_add/0, prop_sub/0, prop_multiply_args/0, prop_square_wrong/0, prop_square_fixed/0]).
+-export([prop_square/0, prop_add/0, prop_sub/0, prop_multiply_args/0, prop_square_wrong/0, prop_square_fixed/0, prop_radius/0]).
 
 %(mod(z))^2 = z* con(z)
 % Checks if  z * con(z) = Re(z)^2 + Im(z)^2
@@ -47,3 +47,11 @@ prop_multiply_args() ->
   ?FORALL({A,B,C,D},{int(),int(),int(),int()},
     complex:arg(complex:multiply(complex:make_number(A,B), complex:make_number(C,D))) == complex:arg(complex:make_number(A,B)) + complex:arg(complex:make_number(C,D))).
 
+
+%z = r(sin(N) * i*cos(N))
+%r = |z|
+prop_radius() ->
+  ?FORALL({N,R},{int(), int()},
+    abs(complex:modulus(complex:make_number(abs(R)*math:sin(N),abs(R) * math:cos(N))) - abs(R))
+      =<
+      0.001 * min(abs(R), complex:make_number(abs(R)*math:sin(N),abs(R) * math:cos(N)))).
