@@ -1,3 +1,4 @@
+
 %%%-------------------------------------------------------------------
 %%% @author Julia
 %%% @copyright (C) 2018, <COMPANY>
@@ -11,7 +12,8 @@
 -include_lib("eqc/include/eqc.hrl").
 
 %% API
--export([prop_square/0, prop_add/0, prop_sub/0, prop_multiply_args/0, prop_square_wrong/0, prop_square_fixed/0, prop_radius/0]).
+-export([prop_square/0, prop_add/0, prop_sub/0, prop_multiply_args/0, prop_square_wrong/0, prop_square_fixed/0, prop_radius/0, prop_mul_module/0, test_all/0]).
+
 
 %(mod(z))^2 = z* con(z)
 % Checks if  z * con(z) = Re(z)^2 + Im(z)^2
@@ -55,3 +57,25 @@ prop_radius() ->
     abs(complex:modulus(complex:make_number(abs(R)*math:sin(N),abs(R) * math:cos(N))) - abs(R))
       =<
       0.001 * min(abs(R), complex:make_number(abs(R)*math:sin(N),abs(R) * math:cos(N)))).
+
+
+%module(a * b ) = module(a) * module(b)
+
+prop_mul_module() ->
+  ?FORALL({A,B,C,D},{int(),int(),int(),int()},
+    abs(complex:modulus(complex:multiply(complex:make_number(A,B), complex:make_number(C,D)))
+    -
+      complex:modulus(complex:make_number(A,B)) * complex:modulus(complex:make_number(C,D)))
+    =< 0.001* min(
+          complex:modulus(complex:multiply(complex:make_number(A,B), complex:make_number(C,D))),
+          complex:modulus(complex:make_number(A,B)) * complex:modulus(complex:make_number(C,D)))).
+
+
+test_all()->
+  eqc:quickcheck(complex_test:prop_mul_module()),
+%  eqc:quickcheck(complex_test:prop_multiply_args()),
+  eqc:quickcheck(complex_test:prop_sub()),
+  eqc:quickcheck(complex_test:prop_add()),
+  eqc:quickcheck(complex_test:prop_square_fixed()),
+%  eqc:quickcheck(complex_test:prop_square_wrong()),
+  eqc:quickcheck(complex_test:prop_square()).
