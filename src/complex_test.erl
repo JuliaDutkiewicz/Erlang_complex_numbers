@@ -12,7 +12,7 @@
 -include_lib("eqc/include/eqc.hrl").
 
 %% API
--export([prop_square/0, prop_add/0, prop_sub/0, prop_multiply_args/0, prop_square_wrong/0, prop_square_fixed/0, prop_radius/0, prop_mul_module/0, test_all/0]).
+-export([prop_square/0, prop_add/0, prop_sub/0, prop_square_wrong/0, prop_square_fixed/0, prop_radius/0, prop_mul_module/0, test_all/0]).
 
 
 %(mod(z))^2 = z* con(z)
@@ -24,7 +24,8 @@ prop_square() ->
 % Checks if (mod(z))^2 = z* con(z) using basic equality. May not always work because sqrt(x)^2 is not always x in the float arith!
 prop_square_wrong() ->
   ?FORALL({R,I},{int(),int()},
-    complex:multiply(complex:make_number(R,I), complex:conjugate(complex:make_number(R,I))) == complex:make_number(complex:modulus(complex:make_number(R,I)) * complex:modulus(complex:make_number(R,I)),0)).
+    complex:multiply(complex:make_number(R,I), complex:conjugate(complex:make_number(R,I)))
+      == complex:make_number(complex:modulus(complex:make_number(R,I)) * complex:modulus(complex:make_number(R,I)),0)).
 
 % Checks if (mod(z))^2 = z* con(z) using approximated equality, defined in "complex" module.
 prop_square_fixed() ->
@@ -44,10 +45,6 @@ prop_add() ->
 prop_sub() ->
   ?FORALL({R,I},{int(),int()},
     complex:add(complex:make_number(R, I), complex:conjugate(complex:make_number(-R,-I))) == complex:make_number(0, 2*I)).
-
-prop_multiply_args() ->
-  ?FORALL({A,B,C,D},{int(),int(),int(),int()},
-    complex:arg(complex:multiply(complex:make_number(A,B), complex:make_number(C,D))) == complex:arg(complex:make_number(A,B)) + complex:arg(complex:make_number(C,D))).
 
 
 %z = r(sin(N) * i*cos(N))
@@ -73,7 +70,6 @@ prop_mul_module() ->
 
 test_all()->
   eqc:quickcheck(complex_test:prop_mul_module()),
-%  eqc:quickcheck(complex_test:prop_multiply_args()),
   eqc:quickcheck(complex_test:prop_sub()),
   eqc:quickcheck(complex_test:prop_add()),
   eqc:quickcheck(complex_test:prop_square_fixed()),

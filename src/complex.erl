@@ -10,7 +10,7 @@
 -author("Julia").
 
 %% API
--export([make_number/2, conjugate/1, add/2, multiply/2, modulus/1, equals/2, arg_sin/1, arg_cos/1, arg/1]).
+-export([make_number/2, conjugate/1, add/2, multiply/2, modulus/1, equals/2]).
 
 -record(complex, {re,im}).
 
@@ -37,11 +37,3 @@ equals(A, B) ->
     and ((abs(A#complex.im) - abs(B#complex.im)) =<
     abs(0.001*(min(abs(A#complex.im), abs(B#complex.im))))).
 
-arg_sin(A) ->
-  A#complex.re / conjugate(A).
-
-arg_cos(A) ->
-  A#complex.im / conjugate(A).
-
-arg(A) ->
-  math:asin(arg_sin(A)).
